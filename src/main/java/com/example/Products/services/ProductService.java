@@ -3,9 +3,15 @@ package com.example.Products.services;
 import java.util.List;
 import java.util.Optional;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.Products.Dto.DtoProductsDetails;
+import com.example.Products.Dto.ProductDto;
 import com.example.Products.Entity.Product;
 import com.example.Products.Repository.ProductRepository;
 
@@ -16,29 +22,15 @@ public class ProductService implements ProductServiceImp {
 	ProductRepository productRepo;
 
 	@Override
-	public Product create(Product product) {
-		return productRepo.save(product);
-	}
-
-	@Override
-	public Product update(Product product) {
-		Optional<Product> product1 = productRepo.findById(product.getId());
-		Product product2 = product1.get();
-		product2.setId(product.getId());
-		product2.setProduct_name(product.getProduct_name());
-		product2.setPrice(product.getPrice());
-		return productRepo.save(product);
-	}
-
-	@Override
-	public Optional<Product> getdetails(int id) {
-
-		return productRepo.findById(id);
-	}
-
-	@Override
-	public List<Product> getall() {
-		return productRepo.findAll();
+	public Product create(ProductDto productdto) {
+		Product entity=new Product();
+		entity.setId(productdto.getId());
+		entity.setModel(productdto.getModel());
+		entity.setPrice(productdto.getPrice());
+		entity.setProduct_name(productdto.getProduct_name());
+		entity.setWarrenty(productdto.getWarrenty());
+		entity.setDetails(productdto.getDetails());
+		return productRepo.save(entity);
 	}
 
 	@Override
@@ -46,4 +38,20 @@ public class ProductService implements ProductServiceImp {
 		productRepo.delete(product);
 		return "deleted";
 	}
+	@Override
+	public List<DtoProductsDetails> getAny(String model) {
+		if(model==null) {
+			return productRepo.findAllProducts();
+		}else
+		return productRepo.findBymodel(model);
+	}
+
+
+    public Page<Product> getAllProducts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productRepo.findAll(pageable);
+
 }
+
+
+	}
